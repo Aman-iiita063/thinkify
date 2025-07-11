@@ -119,26 +119,7 @@ UPLOAD_DIRECTORY = uploads
 - **Cleaner Error Handling:** Better feedback and loading states.
 
 # High-Level Architecture
-
-```mermaid
-graph TD
-  subgraph Frontend (React + MUI)
-    A[NavBar] --> B[Sidebar]
-    B --> C[Main Content]
-    C --> D[Pages: Home, Posts, Tests, Assignments, Dashboard, etc.]
-    C --> E[Components: Banner, AlertBox, LoadingSpinner, etc.]
-  end
-
-  subgraph Backend (Node.js + Express)
-    F[API Routes]
-    F --> G[Controllers]
-    G --> H[Models (MongoDB)]
-    F --> I[Middleware (Auth, Upload, etc.)]
-  end
-
-  D <--> F
-  E <--> F
-```
+<img src="hld.png">
 
 **Frontend:**
 
