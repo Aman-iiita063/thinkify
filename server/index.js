@@ -16,7 +16,11 @@ const DATABASE_NAME = process.env.DATABASE_NAME;
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://thinkify-z8nj.onrender.com"],
+    origin: [
+      "http://localhost:5173",
+      "https://thinkify-z8nj.onrender.com",
+      "https://thinkify-roan.vercel.app",
+    ],
     credentials: true,
   })
 );
