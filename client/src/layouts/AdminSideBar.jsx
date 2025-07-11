@@ -11,6 +11,7 @@ import { useLocation } from "react-router-dom";
 
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import GroupIcon from "@mui/icons-material/Group";
+import AnalyticsIcon from "@mui/icons-material/Analytics";
 import LogoutIcon from "@mui/icons-material/Logout";
 
 import NavBar from "./NavBar";
@@ -35,7 +36,12 @@ const AdminSideBar = () => {
       label: "Users",
       url: "/dashboard/users",
       icon: <GroupIcon />,
-    }
+    },
+    {
+      label: "Analytics",
+      url: "/dashboard/analytics",
+      icon: <AnalyticsIcon />,
+    },
   ];
   const handleLogOut = async () => {
     setAlertBoxOpenStatus(true);
@@ -45,8 +51,6 @@ const AdminSideBar = () => {
     Cookies.remove(import.meta.env.VITE_USER_ROLE, { path: "" });
     navigate("/login");
   };
-
-
 
   useEffect(() => {
     const token = Cookies.get(import.meta.env.VITE_TOKEN_KEY);

@@ -18,7 +18,7 @@
     "@mui/x-date-pickers": "^7.7.0",
     "aos": "^2.3.4",
     "axios": "^1.6.8",
-    "dayjs": "^1.11.11",
+    "dayjs": "^1.11.13",
     "dompurify": "^3.1.5",
     "easymde": "^2.18.0",
     "js-cookie": "^3.0.5",
@@ -37,7 +37,7 @@
     "react-share": "^5.1.2",
     "react-simplemde-editor": "^5.2.0",
     "react-to-print": "^3.0.5",
-    "recharts": "^2.15.0",
+    "recharts": "^2.15.4",
     "sort-by": "^0.0.2",
     "yup": "^1.4.0"
   },

@@ -15,11 +15,25 @@ import NotFound from "../pages/NotFound";
 import Setting from "../pages/Setting";
 import Users from "../pages/dashboard/Users";
 import Dashboard from "../pages/dashboard/Dashboard";
+import Analytics from "../pages/dashboard/Analytics";
 import Post from "../pages/Post";
 import MyProduct from "../pages/MyProduct";
 import PublicRoute from "../layouts/PublicRoute";
 import Product from "../pages/Product";
 import Subscription from "../pages/Subscription";
+import Assignments from "../pages/Assignments";
+import Polls from "../pages/Polls";
+import Resources from "../pages/Resources";
+import Tests from "../pages/Tests";
+import TaskDetails from "../pages/TaskDetails";
+import AddAssignment from "../pages/AddAssignment";
+import AddPoll from "../pages/AddPoll";
+import AddTest from "../pages/AddTest";
+import TakeTest from "../pages/TakeTest";
+import TestDetails from "../pages/TestDetails";
+import EditTest from "../pages/EditTest";
+import ViewSubmissions from "../pages/ViewSubmissions";
+import Posts from "../pages/Posts";
 
 const router = createBrowserRouter([
   {
@@ -95,6 +109,110 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: "/assignments",
+    element: (
+      <UserSideBar>
+        <Assignments />
+      </UserSideBar>
+    ),
+  },
+  {
+    path: "/add-assignment",
+    element: (
+      <UserSideBar>
+        <AddAssignment />
+      </UserSideBar>
+    ),
+  },
+  {
+    path: "/add-poll",
+    element: (
+      <UserSideBar>
+        <AddPoll />
+      </UserSideBar>
+    ),
+  },
+  {
+    path: "/polls",
+    element: (
+      <UserSideBar>
+        <Polls />
+      </UserSideBar>
+    ),
+  },
+  {
+    path: "/posts",
+    element: (
+      <UserSideBar>
+        <Posts />
+      </UserSideBar>
+    ),
+  },
+  {
+    path: "/resources",
+    element: (
+      <UserSideBar>
+        <Resources />
+      </UserSideBar>
+    ),
+  },
+  {
+    path: "/tests",
+    element: (
+      <UserSideBar>
+        <Tests />
+      </UserSideBar>
+    ),
+  },
+  {
+    path: "/add-test",
+    element: (
+      <UserSideBar>
+        <AddTest />
+      </UserSideBar>
+    ),
+  },
+  {
+    path: "/tests/:testId",
+    element: (
+      <UserSideBar>
+        <TestDetails />
+      </UserSideBar>
+    ),
+  },
+  {
+    path: "/tests/:testId/take",
+    element: (
+      <UserSideBar>
+        <TakeTest />
+      </UserSideBar>
+    ),
+  },
+  {
+    path: "/tests/:testId/edit",
+    element: (
+      <UserSideBar>
+        <EditTest />
+      </UserSideBar>
+    ),
+  },
+  {
+    path: "/tests/:testId/submissions",
+    element: (
+      <UserSideBar>
+        <ViewSubmissions />
+      </UserSideBar>
+    ),
+  },
+  {
+    path: "/tasks/:taskId",
+    element: (
+      <UserSideBar>
+        <TaskDetails />
+      </UserSideBar>
+    ),
+  },
+  {
     path: "/posts/:postId",
     element: (
       <PublicRoute>
@@ -109,10 +227,16 @@ const router = createBrowserRouter([
         <Product />
       </PublicRoute>
     ),
-  },{
-path:"/subscription",
-element: <PublicRoute><Subscription /></PublicRoute>
-  },{
+  },
+  {
+    path: "/subscription",
+    element: (
+      <PublicRoute>
+        <Subscription />
+      </PublicRoute>
+    ),
+  },
+  {
     path: "/dashboard",
     element: <AdminSideBar />,
     children: [
@@ -123,6 +247,10 @@ element: <PublicRoute><Subscription /></PublicRoute>
       {
         path: "users",
         element: <Users />,
+      },
+      {
+        path: "analytics",
+        element: <Analytics />,
       },
     ],
   },

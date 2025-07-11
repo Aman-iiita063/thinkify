@@ -1,11 +1,21 @@
-import { Box, Typography, TextField, Button, Divider } from "@mui/material";
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
+  Divider,
+} from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import GoogleIcon from "@mui/icons-material/Google";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import useThinkify from "../hooks/useThinkify";
 import AlertBox from "../../components/common/AlertBox";
@@ -22,6 +32,13 @@ const schema = yup.object().shape({
       "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
     ),
 });
+
+const roles = [
+  { value: "user", label: "Student" },
+  { value: "teacher", label: "Teacher" },
+  { value: "institution", label: "Institution" },
+  { value: "admin", label: "Admin" },
+];
 
 const Registration = () => {
   // alert message
@@ -41,12 +58,13 @@ const Registration = () => {
     },
     resolver: yupResolver(schema),
   });
+  const [role, setRole] = useState("user");
   // form submit
   const onSubmit = async (data) => {
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_SERVER_ENDPOINT}/users/registration`,
-        data
+        { ...data, role }
       );
       if (response.data.status) {
         Cookies.set(import.meta.env.VITE_TOKEN_KEY, response.data.token, {
@@ -57,14 +75,16 @@ const Registration = () => {
           expires: Number(import.meta.env.VITE_COOKIE_EXPIRES),
           path: "",
         });
-        if (response.data.user.role === "user") {
-          navigate("/profile");
-        } else if (response.data.user.role === "admin") {
+        // Redirect based on role
+        if (response.data.user.role === "admin") {
           navigate("/dashboard");
+        } else if (
+          response.data.user.role === "teacher" ||
+          response.data.user.role === "institution"
+        ) {
+          navigate("/profile");
         } else {
-          setAlertBoxOpenStatus(true);
-          setAlertSeverity("error");
-          setAlertMessage("Something Went Wrong");
+          navigate("/profile");
         }
       } else {
         setAlertBoxOpenStatus(true);
@@ -72,14 +92,9 @@ const Registration = () => {
         setAlertMessage(response.data.message);
       }
     } catch (error) {
-      console.log(error);
       setAlertBoxOpenStatus(true);
       setAlertSeverity("error");
-      setAlertMessage("Something Went Wrong");
-      // server error message with status code
-      error.response.data.message
-        ? setAlertMessage(error.response.data.message)
-        : setAlertMessage(error.message);
+      setAlertMessage(error.response?.data?.message || error.message);
     }
   };
   // check if user is already logged in
@@ -97,7 +112,7 @@ const Registration = () => {
       Cookies.remove(import.meta.env.VITE_USER_ROLE, { path: "" });
     }
   }, []);
-  
+
   return (
     <>
       <Box height="100vh" sx={{ display: "flex" }}>
@@ -236,6 +251,22 @@ const Registration = () => {
                   {errors.password.message}
                 </Typography>
               )}
+              <FormControl fullWidth sx={{ mb: 2 }}>
+                <InputLabel id="role-label">Role</InputLabel>
+                <Select
+                  labelId="role-label"
+                  id="role"
+                  value={role}
+                  label="Role"
+                  onChange={(e) => setRole(e.target.value)}
+                >
+                  {roles.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
               <Button
                 type="submit"
                 variant="contained"

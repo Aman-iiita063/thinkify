@@ -15,6 +15,7 @@ import { useEffect } from "react";
 import axios from "axios";
 import useThinkify from "../hooks/useThinkify";
 import AlertBox from "../../components/common/AlertBox";
+import GoogleLogin from "../components/auth/GoogleLogin";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 
@@ -227,16 +228,7 @@ const Login = () => {
               </Button>
             </Box>
             <Divider sx={{ my: 1, color: "white" }}>OR</Divider>
-            <Box>
-              <Button
-                type="submit"
-                variant="contained"
-                fullWidth
-                startIcon={<GoogleIcon />}
-              >
-                Continue With Google
-              </Button>
-            </Box>
+            <GoogleLogin />
             <Box>
               <Typography variant="body2" color="white" sx={{ mt: 4 }}>
                 {`Don't`} Have an Account?

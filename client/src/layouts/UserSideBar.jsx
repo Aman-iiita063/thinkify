@@ -5,6 +5,10 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
+  Divider,
+  Typography,
+  Avatar,
+  useTheme,
 } from "@mui/material";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
@@ -17,22 +21,28 @@ import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import PollIcon from "@mui/icons-material/Poll";
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import QuizIcon from "@mui/icons-material/Quiz";
 
 import NavBar from "./NavBar";
 import Footer from "./Footer";
 import Cookies from "js-cookie";
 import useThinkify from "../hooks/useThinkify";
 import AlertBox from "../../components/common/AlertBox";
-import { useEffect } from "react";
-import SellIcon from '@mui/icons-material/Sell';
+import { useEffect, useState } from "react";
+import SellIcon from "@mui/icons-material/Sell";
 
 const UserSideBar = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [userRole, setUserRole] = useState(null);
+  const theme = useTheme();
   const { setAlertBoxOpenStatus, setAlertMessage, setAlertSeverity } =
     useThinkify();
 
-  const listData = [
+  const baseListData = [
     {
       label: "My Profile",
       url: "/profile",
@@ -70,6 +80,59 @@ const UserSideBar = ({ children }) => {
     },
   ];
 
+  const studentListData = [
+    {
+      label: "Assignments",
+      url: "/assignments",
+      icon: <AssignmentIcon />,
+    },
+  ];
+
+  const commonFeaturesData = [
+    {
+      label: "Posts",
+      url: "/posts",
+      icon: <ListAltIcon />,
+    },
+    {
+      label: "Polls",
+      url: "/polls",
+      icon: <PollIcon />,
+    },
+    {
+      label: "Tests",
+      url: "/tests",
+      icon: <QuizIcon />,
+    },
+  ];
+
+  const teacherListData = [
+    {
+      label: "Resources",
+      url: "/resources",
+      icon: <LibraryBooksIcon />,
+    },
+  ];
+
+  const getListData = () => {
+    let listData = [...baseListData];
+
+    // Show assignments only to students (users)
+    if (userRole === "user") {
+      listData = [...listData, ...studentListData];
+    }
+
+    // Show polls and tests to all users
+    listData = [...listData, ...commonFeaturesData];
+
+    // Show teacher features to teachers, institutions, and admins
+    if (["teacher", "institution", "admin"].includes(userRole)) {
+      listData = [...listData, ...teacherListData];
+    }
+
+    return listData;
+  };
+
   const handleLogOut = async () => {
     setAlertBoxOpenStatus(true);
     setAlertSeverity("success");
@@ -82,94 +145,177 @@ const UserSideBar = ({ children }) => {
   useEffect(() => {
     const token = Cookies.get(import.meta.env.VITE_TOKEN_KEY);
     const role = Cookies.get(import.meta.env.VITE_USER_ROLE);
-    if (token && role) {
-      if (role === "user") {
-        navigate("/profile");
-      } else if (role === "admin") {
-        navigate("/dashboard");
-      }
-    } else {
+    if (!token || !role) {
       Cookies.remove(import.meta.env.VITE_TOKEN_KEY, { path: "" });
       Cookies.remove(import.meta.env.VITE_USER_ROLE, { path: "" });
       navigate("/login");
+    } else {
+      setUserRole(role);
     }
   }, []);
 
+  const isActive = (url) => location.pathname === url;
+
   return (
     <div>
-      <NavBar />
+      <NavBar withSidebar={true} />
       <AlertBox />
-      <Box sx={{ display: "flex", minHeight: "620px" }}>
+      <Box sx={{ display: "flex", minHeight: "calc(100vh - 64px)" }}>
         <Drawer
-          variant="persistent"
-          open
+          variant="permanent"
           sx={{
-            width: "240px",
+            width: 280,
+            flexShrink: 0,
             "& .MuiDrawer-paper": {
-              position: "static",
+              width: 280,
+              boxSizing: "border-box",
+              backgroundColor: "#ffffff",
+              borderRight: "1px solid rgba(0, 0, 0, 0.08)",
+              boxShadow: "2px 0 8px rgba(0, 0, 0, 0.08)",
             },
           }}
         >
-          <List sx={{ p: "0" }}>
-            {listData.map(({ label, url, icon }, index) => (
+          <Box sx={{ p: 3, borderBottom: "1px solid rgba(0, 0, 0, 0.08)" }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
+              <Avatar
+                sx={{
+                  bgcolor: theme.palette.primary.main,
+                  width: 48,
+                  height: 48,
+                  fontSize: "1.2rem",
+                  fontWeight: 600,
+                }}
+              >
+                {userRole?.charAt(0)?.toUpperCase() || "U"}
+              </Avatar>
+              <Box>
+                <Typography
+                  variant="h6"
+                  sx={{ fontWeight: 600, color: "#1b2e35" }}
+                >
+                  Welcome Back
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{ color: "#666", textTransform: "capitalize" }}
+                >
+                  {userRole || "User"}
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+
+          <Box sx={{ overflow: "auto", flex: 1 }}>
+            <List sx={{ p: 0 }}>
+              {getListData().map(({ label, url, icon }, index) => (
+                <ListItem
+                  key={label + "_" + index}
+                  sx={{
+                    px: 3,
+                    py: 1.5,
+                    "&:hover": {
+                      backgroundColor: isActive(url)
+                        ? "rgba(89, 227, 167, 0.1)"
+                        : "rgba(0, 0, 0, 0.04)",
+                    },
+                    transition: "all 0.2s ease",
+                  }}
+                  component="div"
+                >
+                  <NavLink
+                    to={url}
+                    style={{
+                      width: "100%",
+                      textDecoration: "none",
+                      display: "flex",
+                      alignItems: "center",
+                      color: isActive(url)
+                        ? theme.palette.primary.main
+                        : "#666",
+                      fontWeight: isActive(url) ? 600 : 400,
+                    }}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        color: isActive(url)
+                          ? theme.palette.primary.main
+                          : "#666",
+                        minWidth: 40,
+                      }}
+                    >
+                      {icon}
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={label}
+                      sx={{
+                        "& .MuiListItemText-primary": {
+                          fontSize: "0.95rem",
+                          fontWeight: isActive(url) ? 600 : 400,
+                        },
+                      }}
+                    />
+                  </NavLink>
+                </ListItem>
+              ))}
+
+              <Divider sx={{ my: 2, mx: 3 }} />
+
               <ListItem
-                key={label + "_" + index}
-                sx={{ borderBottom: "1px solid lightgray" }}
+                sx={{
+                  px: 3,
+                  py: 1.5,
+                  "&:hover": {
+                    backgroundColor: "rgba(244, 67, 54, 0.1)",
+                  },
+                  transition: "all 0.2s ease",
+                }}
                 component="div"
               >
                 <NavLink
-                  to={url}
+                  onClick={handleLogOut}
                   style={{
                     width: "100%",
                     textDecoration: "none",
                     display: "flex",
                     alignItems: "center",
-                    color: location.pathname === url ? "#59e3a7" : "inherit",
+                    color: "#f44336",
+                    cursor: "pointer",
                   }}
-                  activestyle={{ color: "#59e3a7" }}
                 >
                   <ListItemIcon
                     sx={{
-                      color: location.pathname === url ? "#59e3a7" : "inherit",
+                      color: "#f44336",
+                      minWidth: 40,
                     }}
                   >
-                    {icon}
+                    <LogoutIcon />
                   </ListItemIcon>
                   <ListItemText
-                    primary={label}
+                    primary="Logout"
                     sx={{
-                      color: location.pathname === url ? "#59e3a7" : "inherit",
+                      "& .MuiListItemText-primary": {
+                        fontSize: "0.95rem",
+                        fontWeight: 500,
+                      },
                     }}
                   />
                 </NavLink>
               </ListItem>
-            ))}
-            <ListItem
-              sx={{ borderBottom: "1px solid lightgray" }}
-              component="div"
-            >
-              <NavLink
-                onClick={handleLogOut}
-                component="button"
-                style={{
-                  width: "100%",
-                  textDecoration: "none",
-                  display: "flex",
-                  alignItems: "center",
-                  color: "inherit",
-                }}
-              >
-                <ListItemIcon sx={{ color: "inherit" }}>
-                  <LogoutIcon />
-                </ListItemIcon>
-                <ListItemText primary={"Sign Out"} />
-              </NavLink>
-            </ListItem>
-          </List>
+            </List>
+          </Box>
         </Drawer>
-        <Box sx={{ width: "100%", margin: "10px" }}>{children}</Box>
+
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            backgroundColor: "#fafafa",
+            minHeight: "calc(100vh - 64px)",
+          }}
+        >
+          <Box sx={{ p: 3 }}>{children}</Box>
+        </Box>
       </Box>
-      <Footer />
     </div>
   );
 };

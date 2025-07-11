@@ -1,6 +1,16 @@
-import express from 'express';
-import { addComment, addPost, addReaction, editPost, getAllPost, getSinglePost, handleVisibility, removePost } from '../controller/post.js';
-import userAuthentication from '../middleware/userAuthentication.js';
+import express from "express";
+import {
+  addComment,
+  addPost,
+  addReaction,
+  editPost,
+  getAllPost,
+  getAllPublicPosts,
+  getSinglePost,
+  handleVisibility,
+  removePost,
+} from "../controller/post.js";
+import userAuthentication from "../middleware/userAuthentication.js";
 
 const post = express.Router();
 
@@ -13,13 +23,14 @@ post.post("/:postId/reaction", userAuthentication, addReaction);
 
 // READ DATA
 post.get("/", userAuthentication, getAllPost);
+post.get("/public", getAllPublicPosts); // Public posts feed - no authentication required
 post.get("/:postId", getSinglePost);
 
 // REMOVE DATA
-post.delete("/:postId",userAuthentication, removePost);
+post.delete("/:postId", userAuthentication, removePost);
 
 // UPDATE DATA
 post.patch("/change-visibility/:postId", userAuthentication, handleVisibility);
-post.patch("/:postId",userAuthentication, editPost);
+post.patch("/:postId", userAuthentication, editPost);
 
-export default post
+export default post;
